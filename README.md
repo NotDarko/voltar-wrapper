@@ -162,7 +162,7 @@ If you need more control over the task lifecycle:
 
 ```typescript
 // Create a bypass task
-const taskCreation = await voltar.createBypassTask('https://example.com/shortlink');
+const taskCreation = await voltar.createTask('https://example.com/shortlink');
 const taskId = taskCreation.taskId;
 
 // Check the task status periodically

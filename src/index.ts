@@ -1,5 +1,3 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-
 interface BypassResponse {
   status: "success" | "error";
   result?: string;
@@ -21,79 +19,99 @@ interface TaskResultResponse {
 }
 
 interface ServicesResponse {
-  services: Record<string, string[]>;
+  services: { adlinks: string[]; keysystems: string[] };
+}
+
+interface RequestOptions {
+  method: string;
+  headers: Record<string, string>;
+  body?: string;
 }
 
 export class Voltar {
-  private client: AxiosInstance;
   private baseURL: string = 'https://api.voltar.lol';
+  private headers: Record<string, string>;
 
   constructor(private apiKey: string) {
     if (!apiKey) {
       throw new Error('API key is required');
     }
 
-    this.client = axios.create({
-      baseURL: this.baseURL,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': this.apiKey
+    this.headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': this.apiKey
+    };
+  }
+
+  private async request<T>(endpoint: string, method: string, body?: any): Promise<T> {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const options: RequestOptions = {
+      method,
+      headers: this.headers
+    };
+
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+
+    try {
+      const response = await fetch(url, options);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Request failed with status ${response.status}`);
       }
-    });
+      
+      return await response.json() as T;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('An unknown error occurred');
+    }
   }
 
   public async bypass(url: string, cache: boolean = true): Promise<BypassResponse> {
-    try {
-      if (!url) {
-        throw new Error('URL is required');
-      }
+    if (!url) {
+      throw new Error('URL is required');
+    }
 
-      const response: AxiosResponse = await this.client.post('/bypass', { 
-        url, 
-        cache 
-      });
-      
-      return response.data;
+    try {
+      return await this.request<BypassResponse>('/bypass', 'POST', { url, cache });
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(`Bypass failed: ${error.response.data.message || error.message}`);
+      if (error instanceof Error) {
+        throw new Error(`Bypass failed: ${error.message}`);
       }
       throw error;
     }
   }
 
-  public async createBypassTask(url: string, cache: boolean = true): Promise<CreateTaskResponse> {
-    try {
-      if (!url) {
-        throw new Error('URL is required');
-      }
+  public async createTask(url: string, cache: boolean = true): Promise<CreateTaskResponse> {
+    if (!url) {
+      throw new Error('URL is required');
+    }
 
-      const response: AxiosResponse = await this.client.post('/bypass/createTask', { 
-        url, 
-        cache 
-      });
-      
-      return response.data;
+    try {
+      return await this.request<CreateTaskResponse>('/bypass/createTask', 'POST', { url, cache });
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(`Task creation failed: ${error.response.data.message || error.message}`);
+      if (error instanceof Error) {
+        throw new Error(`Task creation failed: ${error.message}`);
       }
       throw error;
     }
   }
-
 
   public async getTaskResult(taskId: string): Promise<TaskResultResponse> {
-    try {
-      if (!taskId) {
-        throw new Error('Task ID is required');
-      }
+    if (!taskId) {
+      throw new Error('Task ID is required');
+    }
 
-      const response: AxiosResponse = await this.client.get(`/bypass/getTaskResult/${taskId}`);
-      return response.data;
+    try {
+      return await this.request<TaskResultResponse>(`/bypass/getTaskResult/${taskId}`, 'GET');
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(`Failed to get task result: ${error.response.data.message || error.message}`);
+      if (error instanceof Error) {
+        throw new Error(`Failed to get task result: ${error.message}`);
       }
       throw error;
     }
@@ -105,12 +123,12 @@ export class Voltar {
     pollingInterval: number = 1000,
     timeout: number = 120000
   ): Promise<TaskResultResponse> {
-    try {
-      if (!url) {
-        throw new Error('URL is required');
-      }
+    if (!url) {
+      throw new Error('URL is required');
+    }
 
-      const createTaskResult = await this.createBypassTask(url, cache);
+    try {
+      const createTaskResult = await this.createTask(url, cache);
       
       if (createTaskResult.status !== "success" || !createTaskResult.taskId) {
         throw new Error(`Failed to create task: ${createTaskResult.message}`);
@@ -147,11 +165,10 @@ export class Voltar {
 
   public async services(): Promise<ServicesResponse> {
     try {
-      const response: AxiosResponse = await this.client.get('/bypass/services');
-      return response.data;
+      return await this.request<ServicesResponse>('/bypass/services', 'GET');
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(`Failed to get services: ${error.response.data.message || error.message}`);
+      if (error instanceof Error) {
+        throw new Error(`Failed to get services: ${error.message}`);
       }
       throw error;
     }
