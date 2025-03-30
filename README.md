@@ -53,7 +53,7 @@ Bypasses a URL using the asynchronous task-based approach. Recommended for URLs 
 - `timeout` (number, optional): Maximum time in ms to wait for completion. Defaults to 60000ms (1 minute)
 - Returns: Promise with the bypass result
 
-### `createBypassTask(url, cache?)`
+### `createTask(url, cache?)`
 
 Creates an asynchronous bypass task.
 
