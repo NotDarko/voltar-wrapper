@@ -1,0 +1,29 @@
+{
+  "name": "voltar-wrapper",
+  "version": "1.0.0",
+  "description": "A TypeScript wrapper for the Voltar API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "voltar",
+    "api",
+    "wrapper",
+    "bypass"
+  ],
+  "author": "NotDarko",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.4"
+  },
+  "files": [
+    "dist"
+  ]
+}
