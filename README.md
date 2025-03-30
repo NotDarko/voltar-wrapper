@@ -74,38 +74,6 @@ Gets a list of supported services.
 
 - Returns: Promise with list of supported services categorized by type
 
-## Response Types
-
-### BypassResponse
-
-```typescript
-{
-  status: "success" | "error";
-  result?: string;
-  message?: string;
-  cached?: boolean;
-}
-```
-
-### TaskResultResponse
-
-```typescript
-{
-  status: "success" | "processing" | "error";
-  result?: string;
-  message?: string;
-  cached?: boolean;
-}
-```
-
-### ServicesResponse
-
-```typescript
-{
-  services: Record<string, string[]>;
-}
-```
-
 ## Example Usage
 
 ### TypeScript
