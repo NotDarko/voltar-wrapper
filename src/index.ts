@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosResponse } from 'axios';
 interface BypassResponse {
   status: "success" | "error";
   result?: string;
+  message?: string;
   cached?: boolean;
 }
 

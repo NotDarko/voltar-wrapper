@@ -82,6 +82,7 @@ Gets a list of supported services.
 {
   status: "success" | "error";
   result?: string;
+  message?: string;
   cached?: boolean;
 }
 ```
