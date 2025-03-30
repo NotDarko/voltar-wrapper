@@ -150,7 +150,7 @@ async function run() {
   } catch (error) {
     console.error('Error:', error.message);
   }
-} s
+} 
 
 // Run the Example
 run();
